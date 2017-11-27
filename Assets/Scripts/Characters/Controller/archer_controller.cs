@@ -14,12 +14,12 @@ public class archer_controller : MonoBehaviour
     [Header("Fire")]
     [SerializeField] private GameObject arrow_prefab;
     [SerializeField] private Transform arrow_transform;
+    [SerializeField] private float arrow_velocity = 20;
     [SerializeField] private float time_to_fire = 10;
     [SerializeField] private float last_time_fire = 0;
 
     private GameObject player;
     private Rigidbody2D rigid;
-    //private Physic physic;
     private Archer archer;
     private Animator anim_controller;
     private Transform player_transform;
@@ -40,7 +40,6 @@ public class archer_controller : MonoBehaviour
     void Start()
     {
         archer = new Archer();
-        //physic = new Physic();
         rigid = GetComponent<Rigidbody2D>();
         anim_controller = GetComponent<Animator>();
         archer_bounds = GetComponent<Renderer>().bounds.size;
@@ -72,29 +71,31 @@ public class archer_controller : MonoBehaviour
 
     private void Shoot()
     {
-        /*if (!rotate_used)
+
+        if (!rotate_used)
         {
             //physic.GetBaseAngle(arrow_transform, player_transform);
             //rotate_around = new Vector3(rotate_around.x, rotate_around.y, rotate_around.z + physic.GetBaseAngle(arrow_transform, player_transform));
+            arrow_velocity = -arrow_velocity;
             arrow_transform.Rotate(rotate_around);
             rotate_used = true;
         }
 
         GetRndAngle();
+        GameObject arrow;
 
         if(player_transform.position.x < gameObject.transform.position.x)
         {
-            GameObject arrow = Instantiate(arrow_prefab, arrow_transform.position, new Quaternion(0, 0, arrow_transform.rotation.z - physic.GetBaseAngle(arrow_transform, player_transform), 0));
+            arrow = Instantiate(arrow_prefab, arrow_transform.position, new Quaternion(0, 0, arrow_transform.rotation.z - rnd_aim_angle, 0));
         }
         else
         {
-            /// A faire
+            arrow = Instantiate(arrow_prefab, arrow_transform.position, new Quaternion(0, 0, arrow_transform.rotation.z + rnd_aim_angle, 0));
         }
-        {
-            GameObject arrow = Instantiate(arrow_prefab, arrow_transform.position, new Quaternion(0, 0, arrow_transform.rotation.z - physic.GetBaseAngle(arrow_transform, player_transform), 0));
-        }
-        
-        anim_controller.SetBool("is_shooting", false);*/
+
+        arrow.GetComponent<Rigidbody2D>().AddForce(new Vector2(arrow_velocity, 0), ForceMode2D.Impulse);
+
+        anim_controller.SetBool("is_shooting", false);
     }
 
     private void Rotate()
@@ -126,14 +127,15 @@ public class archer_controller : MonoBehaviour
         }
     }
 
+
     private void WillStab()
     {
-        if (!anim_controller.GetBool("is_stabbing"))
+        if (!anim_controller.GetBool("is_attacking"))
         {
             if (Mathf.Abs(transform.position.x - player_transform.position.x + player_bounds.x) <= stab_range
                 || Mathf.Abs(player_transform.position.x - player_bounds.x - transform.position.x) <= stab_range)
             {
-                anim_controller.SetBool("is_stabbing", true);
+                anim_controller.SetBool("is_attacking", true);
                 stab_collider.enabled = true;
             }
         }
@@ -142,7 +144,7 @@ public class archer_controller : MonoBehaviour
     private void Stab()
     {
         stab_collider.enabled = false;
-        anim_controller.SetBool("is_stabbing", false);
+        anim_controller.SetBool("is_attacking", false);
     }
 
     private void Touched()

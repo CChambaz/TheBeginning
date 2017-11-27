@@ -33,7 +33,7 @@ public class paladin_controller : MonoBehaviour
         hero_renderer = GetComponent<SpriteRenderer>();
         rigid = GetComponent<Rigidbody2D>();
         anim_controller = GetComponent<Animator>();
-        //spawn_transform = GameObject.Find("Spawn").transform;
+        spawn_transform = GameObject.Find("Spawn").transform;
         rigid.mass = paladin_player.mass;
     }
 	
@@ -48,7 +48,6 @@ public class paladin_controller : MonoBehaviour
         anim_controller.SetFloat("speed_x", Mathf.Abs(horizontal_input));
         
         anim_controller.SetBool("is_attacking", false);
-        gameObject.tag = "Player";
 
         if (Input.GetKey(KeyCode.A) && !hero_renderer.flipX)
         {
@@ -121,7 +120,7 @@ public class paladin_controller : MonoBehaviour
             SceneManager.LoadScene("WinMenu");
         }
 
-        if (collision.tag == "EnnemyAttack")
+        if (collision.tag == "EnemyAttack")
         {
             paladin_player.HasBeenTouched(transform, spawn_transform);
 
@@ -131,14 +130,14 @@ public class paladin_controller : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.tag == "Ennemy")
+        if (collision.collider.tag == "Enemy")
         {
             paladin_player.HasBeenTouched(transform, spawn_transform);
 
             anim_controller.SetBool("is_touched", true);
         }
 
-        if (collision.collider.tag == "EnnemyAmmo")
+        if (collision.collider.tag == "EnemyAmmo")
         {
             paladin_player.HasBeenTouched(transform, spawn_transform);
 
