@@ -18,7 +18,11 @@ public class archer_controller : MonoBehaviour
     [SerializeField] private float time_to_fire = 5;
     [SerializeField] private float last_time_fire = 0;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip sound_touched;
+
     private GameManager game_manager;
+    private AudioSource audio_source;
     private GameObject player;
     private Rigidbody2D rigid;
     private Archer archer;
@@ -35,14 +39,10 @@ public class archer_controller : MonoBehaviour
     private Vector3 player_bounds;
     private float rnd_aim_angle;
     private float rnd_aim_min = 0;
-    private float rnd_aim_max = 45;
-    
-    private float touched_time;
-    
+    private float rnd_aim_max = 45;    
+    private float touched_time;    
     private float touched_cooldown = 1.0f;
-
-    // Test
-    //private Vector3 tmp_pos_raycast;
+    private float audio_delay = 0.2f;
 
     // Use this for initialization
     void Start()
@@ -50,6 +50,7 @@ public class archer_controller : MonoBehaviour
         archer = new Archer();
         rigid = GetComponent<Rigidbody2D>();
         anim_controller = GetComponent<Animator>();
+        audio_source = GetComponent<AudioSource>();
         archer_bounds = GetComponent<Renderer>().bounds.size;
         player = GameObject.FindGameObjectWithTag("Player").gameObject;
         player_transform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -112,7 +113,7 @@ public class archer_controller : MonoBehaviour
         last_time_fire = Time.time;
 
         anim_controller.SetBool("is_shooting", false);
-
+        
         Destroy(arrow, 5);
     }
 
@@ -140,6 +141,7 @@ public class archer_controller : MonoBehaviour
                 && (Mathf.Abs(transform.position.x - player_transform.position.x) > attack_range || Mathf.Abs(player_transform.position.x - transform.position.x) > attack_range))
             {
                 anim_controller.SetBool("is_shooting", true);
+                audio_source.PlayDelayed(audio_delay);
             }
         }
     }
@@ -178,6 +180,7 @@ public class archer_controller : MonoBehaviour
             Attack();
             anim_controller.SetBool("is_shooting", false);
             anim_controller.SetBool("is_touched", true);
+            SoundManager.sm_instance.PlaySounds(sound_touched);
             touched_time = Time.time;
         }
 
@@ -187,19 +190,8 @@ public class archer_controller : MonoBehaviour
             Attack();
             anim_controller.SetBool("is_shooting", false);
             anim_controller.SetBool("is_touched", true);
+            SoundManager.sm_instance.PlaySounds(sound_touched);
             touched_time = Time.time;
         }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        /*if (collision.collider.tag == "ThunderBall")
-        {
-            archer.HasBeenTouched(GameManager.gm_instance.thunder_ball_damage);
-            Attack();
-            anim_controller.SetBool("is_shooting", false);
-            anim_controller.SetBool("is_touched", true);
-            touched_time = Time.time;
-        }*/
     }
 }

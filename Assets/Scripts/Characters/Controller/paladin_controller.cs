@@ -25,6 +25,13 @@ public class paladin_controller : MonoBehaviour
     [SerializeField] private Transform cast_right;
     [SerializeField] private GameObject spell_prefab;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip sound_bonus;
+    [SerializeField] private AudioClip sound_attack;
+    [SerializeField] private AudioClip sound_jump;
+    [SerializeField] private AudioClip sound_spell;
+    [SerializeField] private AudioClip sound_touched;
+
     private Transform spawn_transform;
     private Rigidbody2D rigid;
     private Paladin paladin_player;
@@ -88,8 +95,10 @@ public class paladin_controller : MonoBehaviour
             if (rigid.velocity.y <= paladin_player.force_y)
             {
                 rigid.AddForce(Vector2.up * paladin_player.force_y, ForceMode2D.Impulse);
-            }            
-            
+            }
+
+            SoundManager.sm_instance.PlaySounds(sound_jump);
+
             anim_controller.SetBool("is_jumping", true);
         }        
 
@@ -101,7 +110,7 @@ public class paladin_controller : MonoBehaviour
         if (Input.GetAxis("Fire1") > 0 && !anim_controller.GetBool("is_attacking") && !anim_controller.GetBool("is_spelling"))
         {
             attack_collider.enabled = true;
-
+            
             anim_controller.SetBool("is_attacking", true);            
         }
 
@@ -119,7 +128,7 @@ public class paladin_controller : MonoBehaviour
     private void Attack()
     {
         anim_controller.SetBool("is_attacking", false);
-
+        SoundManager.sm_instance.PlaySounds(sound_attack);
         attack_collider.enabled = false;
     }
 
@@ -142,6 +151,8 @@ public class paladin_controller : MonoBehaviour
             }
 
             paladin_player.ammo -= 1;
+
+            SoundManager.sm_instance.PlaySounds(sound_spell);
         }
     }
 
@@ -163,6 +174,7 @@ public class paladin_controller : MonoBehaviour
 
             if (!anim_controller.GetBool("is_attacking"))
             {
+                SoundManager.sm_instance.PlaySounds(sound_touched);
                 anim_controller.SetBool("is_touched", true);
                 touched_time = Time.time;
             }
@@ -171,12 +183,15 @@ public class paladin_controller : MonoBehaviour
         if(collision.tag == "HostileEnvironnement")
         {
             paladin_player.HasBeenTouched(transform, spawn_transform);
+            SoundManager.sm_instance.PlaySounds(sound_touched);
             anim_controller.SetBool("is_touched", true);
             touched_time = Time.time;
         }
 
         if(collision.tag == "HPItem")
         {
+            SoundManager.sm_instance.PlaySounds(sound_bonus);
+
             paladin_player.health_point += GameManager.gm_instance.item_hp_gained;
 
             Destroy(collision.gameObject);
@@ -184,6 +199,8 @@ public class paladin_controller : MonoBehaviour
 
         if (collision.tag == "ManaItem")
         {
+            SoundManager.sm_instance.PlaySounds(sound_bonus);
+
             paladin_player.ammo += GameManager.gm_instance.item_mana_gained;
 
             Destroy(collision.gameObject);
@@ -191,6 +208,8 @@ public class paladin_controller : MonoBehaviour
 
         if (collision.tag == "LifeItem")
         {
+            SoundManager.sm_instance.PlaySounds(sound_bonus);
+
             paladin_player.life += GameManager.gm_instance.item_life_gained;
 
             Destroy(collision.gameObject);
@@ -205,6 +224,7 @@ public class paladin_controller : MonoBehaviour
 
             if (!anim_controller.GetBool("is_attacking"))
             {
+                SoundManager.sm_instance.PlaySounds(sound_touched);
                 anim_controller.SetBool("is_touched", true);
                 touched_time = Time.time;
             }

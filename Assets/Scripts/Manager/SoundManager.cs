@@ -5,6 +5,8 @@ using UnityEngine;
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager sm_instance = null;
+    public AudioSource musique_source;
+    public AudioSource sounds_source;
 
     private void Awake()
     {
@@ -20,15 +22,9 @@ public class SoundManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // Use this for initialization
-    void Start ()
+    public void PlaySounds(AudioClip clip)
     {
-		
-	}
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        sounds_source.clip = clip;
+        sounds_source.Play();
     }
 }

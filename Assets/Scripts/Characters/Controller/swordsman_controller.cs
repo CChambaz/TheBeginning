@@ -9,6 +9,7 @@ public class swordsman_controller : MonoBehaviour
     [SerializeField] private Transform right_check;
     [SerializeField] private LayerMask layer_check;
     [SerializeField] private float radius_check = 0.2f;
+    [SerializeField] private AudioClip sound_touched;
 
     private GameObject player;
     private Transform player_transform;
@@ -92,6 +93,7 @@ public class swordsman_controller : MonoBehaviour
             Attack();
             anim_controller.SetBool("is_touched", true);
             touched_time = Time.time;
+            SoundManager.sm_instance.PlaySounds(sound_touched);
             swordsman.HasBeenTouched(GameManager.gm_instance.cqb_damage);
             rigid.velocity = new Vector2(0, 0);
         }
@@ -101,18 +103,8 @@ public class swordsman_controller : MonoBehaviour
             swordsman.HasBeenTouched(GameManager.gm_instance.thunder_ball_damage);
             Attack();
             anim_controller.SetBool("is_touched", true);
+            SoundManager.sm_instance.PlaySounds(sound_touched);
             touched_time = Time.time;
         }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        /*if (collision.collider.tag == "ThunderBall")
-        {
-            swordsman.HasBeenTouched(GameManager.gm_instance.thunder_ball_damage);
-            Attack();
-            anim_controller.SetBool("is_touched", true);
-            touched_time = Time.time;
-        }*/
     }
 }

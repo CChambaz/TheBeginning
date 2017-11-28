@@ -237,6 +237,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16640
   radius_check: 0.2
+  sound_touched: {fileID: 8300000, guid: 223dc32ef518f9e45a14d30a9cb78ba0, type: 3}
 --- !u!212 &212770247339183664
 SpriteRenderer:
   m_ObjectHideFlags: 1
