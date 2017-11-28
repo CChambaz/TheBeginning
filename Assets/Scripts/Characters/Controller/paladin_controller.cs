@@ -14,22 +14,28 @@ public class paladin_controller : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Text text_life;
     [SerializeField] private Text text_health_point;
+    [SerializeField] private Text text_mana;
 
     [Header("Object Info")]
     [SerializeField] private SpriteRenderer hero_renderer;
     [SerializeField] private CircleCollider2D attack_collider;
 
+    [Header("Spell")]
+    [SerializeField] private Transform cast_left;
+    [SerializeField] private Transform cast_right;
+    [SerializeField] private GameObject spell_prefab;
+
     private Transform spawn_transform;
     private Rigidbody2D rigid;
-    //private Control control;
     private Paladin paladin_player;
     private Animator anim_controller;
+    private float touched_time;
+    private float touched_cooldown = 0.5f;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
         paladin_player = new Paladin();
-        //control = new Control();
         hero_renderer = GetComponent<SpriteRenderer>();
         rigid = GetComponent<Rigidbody2D>();
         anim_controller = GetComponent<Animator>();
@@ -40,22 +46,21 @@ public class paladin_controller : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        //text_life.text = control.text_life + paladin_player.life.ToString();
-        //text_health_point.text = control.text_health_point + paladin_player.health_point.ToString();
+        text_life.text = "Life : " + paladin_player.life.ToString();
+        text_health_point.text = "HP : " + paladin_player.health_point.ToString();
+        text_mana.text = "Mana : " + paladin_player.ammo.ToString();
 
         float horizontal_input = Input.GetAxis("Horizontal");
 
         anim_controller.SetFloat("speed_x", Mathf.Abs(horizontal_input));
-        
-        anim_controller.SetBool("is_attacking", false);
 
-        if (Input.GetKey(KeyCode.A) && !hero_renderer.flipX)
+        if ((Input.GetKey(KeyCode.A) || horizontal_input < 0) && !hero_renderer.flipX)
         {
             rigid.velocity = new Vector2(rigid.velocity.normalized.x, rigid.velocity.y);
             hero_renderer.flipX = true;
         }
 
-        if (Input.GetKey(KeyCode.D) && hero_renderer.flipX)
+        if ((Input.GetKey(KeyCode.D) || horizontal_input > 0) && hero_renderer.flipX)
         {
             rigid.velocity = new Vector2(rigid.velocity.normalized.x, rigid.velocity.y);
             hero_renderer.flipX = false;
@@ -93,11 +98,21 @@ public class paladin_controller : MonoBehaviour
             anim_controller.SetBool("is_jumping", true);
         }
 
-        if (Input.GetAxis("Fire1") > 0 && !anim_controller.GetBool("is_attacking"))
+        if (Input.GetAxis("Fire1") > 0 && !anim_controller.GetBool("is_attacking") && !anim_controller.GetBool("is_spelling"))
         {
             attack_collider.enabled = true;
 
             anim_controller.SetBool("is_attacking", true);            
+        }
+
+        if(Input.GetAxis("Fire2") > 0 && !anim_controller.GetBool("is_spelling") && !anim_controller.GetBool("is_attacking") && paladin_player.ammo > 0)
+        {
+            anim_controller.SetBool("is_spelling", true);
+        }
+
+        if (Time.time - touched_time > touched_cooldown)
+        {
+            Touched();
         }
     }
 
@@ -113,6 +128,28 @@ public class paladin_controller : MonoBehaviour
         anim_controller.SetBool("is_touched", false);
     }
 
+    private void ChargeSpell()
+    {
+        if (!anim_controller.GetBool("is_spelling"))
+        {
+            if (gameObject.GetComponent<SpriteRenderer>().flipX)
+            {
+                GameObject spell = Instantiate(spell_prefab, cast_left.transform.position, cast_left.rotation);
+            }
+            else
+            {
+                GameObject spell = Instantiate(spell_prefab, cast_right.transform.position, cast_right.rotation);
+            }
+
+            paladin_player.ammo -= 1;
+        }
+    }
+
+    private void ShootSpell()
+    {        
+        anim_controller.SetBool("is_spelling", false);        
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Win")
@@ -124,25 +161,26 @@ public class paladin_controller : MonoBehaviour
         {
             paladin_player.HasBeenTouched(transform, spawn_transform);
 
-            anim_controller.SetBool("is_touched", true);
+            if (!anim_controller.GetBool("is_attacking"))
+            {
+                anim_controller.SetBool("is_touched", true);
+                touched_time = Time.time;
+            }
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.tag == "Enemy")
+        if (collision.collider.tag == "EnemyAmo")
         {
             paladin_player.HasBeenTouched(transform, spawn_transform);
 
-            anim_controller.SetBool("is_touched", true);
-        }
-
-        if (collision.collider.tag == "EnemyAmmo")
-        {
-            paladin_player.HasBeenTouched(transform, spawn_transform);
-
-            anim_controller.SetBool("is_touched", true);
-
+            if (!anim_controller.GetBool("is_attacking"))
+            {
+                anim_controller.SetBool("is_touched", true);
+                touched_time = Time.time;
+            }
+            
             Destroy(collision.collider.gameObject);
         }
     }

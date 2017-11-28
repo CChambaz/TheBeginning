@@ -82,7 +82,7 @@ public class Characters
     {
         health_point -= damage;
 
-        if(health_point == 0)
+        if(health_point <= 0)
         {
             IsDead();
         }

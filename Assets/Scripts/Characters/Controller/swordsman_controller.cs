@@ -13,7 +13,10 @@ public class swordsman_controller : MonoBehaviour
     private Rigidbody2D rigid;
     private Swordsman swordsman;
     private Animator anim_controller;
-    private float touched_time = 0.0f;
+    private float attack_time;
+    private float touched_time;
+    private float attack_cooldown = 2.0f;
+    private float touched_cooldown = 2.0f;
 
 	// Use this for initialization
 	void Start ()
@@ -30,23 +33,37 @@ public class swordsman_controller : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        swordsman.Move(gameObject, rigid, player);
+        if(!anim_controller.GetBool("is_touched") && !anim_controller.GetBool("is_attacking"))
+        {
+            swordsman.Move(gameObject, rigid, player);
+        }       
 
         WillAttack();
 
         anim_controller.SetFloat("speed_x", Mathf.Abs(rigid.velocity.x));
-        anim_controller.SetFloat("is_touched", touched_time);
+
+        if(Time.time - touched_time > touched_cooldown)
+        {
+            anim_controller.SetBool("is_touched", false);
+        }
+
+        if (swordsman.life <= 0)
+        {
+            Destroy(gameObject, 1);
+        }
     }
 
     private void WillAttack()
     {
-        if (!anim_controller.GetBool("is_attacking"))
+        if (!anim_controller.GetBool("is_attacking") && Time.time - attack_time > attack_cooldown && !anim_controller.GetBool("is_touched"))
         {
             if (Mathf.Abs(transform.position.x - player_transform.position.x + player_bounds.x) <= attack_range
                 || Mathf.Abs(player_transform.position.x - player_bounds.x - transform.position.x) <= attack_range)
             {
                 anim_controller.SetBool("is_attacking", true);
                 attack_collider.enabled = true;
+                attack_time = Time.time;
+                rigid.velocity = new Vector2(0, 0);
             }
         }
     }
@@ -57,20 +74,26 @@ public class swordsman_controller : MonoBehaviour
         anim_controller.SetBool("is_attacking", false);
     }
 
-    private void Touched()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (swordsman.life <= 0)
+        if (collision.tag == "PlayerAttack" && !anim_controller.GetBool("is_touched"))
         {
-            Destroy(gameObject, 1);
+            Attack();
+            anim_controller.SetBool("is_touched", true);
+            touched_time = Time.time;
+            swordsman.HasBeenTouched(GameManager.gm_instance.cqb_damage);
+            rigid.velocity = new Vector2(0, 0);
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.tag == "PlayerAttack") //&& !anim_controller.GetBool("is_touched"))
+        if (collision.collider.tag == "ThunderBall")
         {
-            touched_time = 2.0f;
-            swordsman.HasBeenTouched(1);
+            swordsman.HasBeenTouched(GameManager.gm_instance.thunder_ball_damage);
+            Attack();
+            anim_controller.SetBool("is_touched", true);
+            touched_time = Time.time;
         }
     }
 }

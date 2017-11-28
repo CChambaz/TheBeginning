@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager gm_instance = null;
+    public int thunder_ball_damage = 5;
+    public int cqb_damage = 2;
 
     private void Awake()
     {

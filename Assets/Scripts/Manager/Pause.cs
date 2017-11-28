@@ -8,36 +8,8 @@ public class Pause : MonoBehaviour
     [SerializeField] private GameObject pause_panel;
     [SerializeField] private GameObject ui_panel;
 
-    public event Action on_pause_event;
-
     bool is_paused = false;
 
-    private static Pause instance;
-
-    public static Pause Instance
-    {
-        get
-        {
-            if(instance == null)
-            {
-                instance = FindObjectOfType<Pause>();
-            }
-
-            return instance;
-        }
-    }
-
-    public void Awake()
-    {
-        instance = this;
-    }
-
-    // Use this for initialization
-    void Start ()
-    {
-        
-	}
-	
 	// Update is called once per frame
 	void Update ()
     {
@@ -48,7 +20,7 @@ public class Pause : MonoBehaviour
             ui_panel.SetActive(false);
             Time.timeScale = 0;
         }
-	}
+    }
 
     public void Resume()
     {
