@@ -3,7 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Platforme
+  - Enemy
+  - PlayerAttack
+  - EnemyAttack
+  - EnemyAmo
+  - ThunderBall
+  - Win
+  - HostileEnvironnement
+  - HPItem
+  - LifeItem
+  - ManaItem
+  - Limit
   layers:
   - Default
   - TransparentFX
@@ -13,13 +25,13 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Front
+  - BackgroundHerb
+  - BackgroundTrees1
+  - BackgroundTrees2
+  - BackgroundTrees3
+  - BackgroundMoon
+  - Platforme
   - 
   - 
   - 
@@ -40,4 +52,22 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Front
+    uniqueID: 3467224111
+    locked: 0
+  - name: BackgroundHerb
+    uniqueID: 3134370519
+    locked: 0
+  - name: BackgroundTrees1
+    uniqueID: 69906275
+    locked: 0
+  - name: BackgroundTrees2
+    uniqueID: 2418144151
+    locked: 0
+  - name: BackgroundTrees3
+    uniqueID: 935177085
+    locked: 0
+  - name: BackgroundMoon
+    uniqueID: 1126433771
     locked: 0

@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
     public static GameManager gm_instance = null;
     public int thunder_ball_damage = 5;
     public int cqb_damage = 2;
+    public int item_hp_gained = 5;
+    public int item_life_gained = 1;
+    public int item_mana_gained = 3;
 
     private void Awake()
     {

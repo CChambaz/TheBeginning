@@ -13,8 +13,8 @@ public class Paladin : Characters
         max_speed = 10;
 
         max_life = 2;
-        max_health_point = 75;
-        max_ammo = 10;
+        max_health_point = 20;
+        max_ammo = 3;
 
         life = max_life;
         health_point = max_health_point;

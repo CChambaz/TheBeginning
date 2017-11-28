@@ -5,6 +5,10 @@ using UnityEngine;
 public class swordsman_controller : MonoBehaviour
 {
     [SerializeField] Collider2D attack_collider;
+    [SerializeField] private Transform left_check;
+    [SerializeField] private Transform right_check;
+    [SerializeField] private LayerMask layer_check;
+    [SerializeField] private float radius_check = 0.2f;
 
     private GameObject player;
     private Transform player_transform;
@@ -17,6 +21,7 @@ public class swordsman_controller : MonoBehaviour
     private float touched_time;
     private float attack_cooldown = 2.0f;
     private float touched_cooldown = 2.0f;
+    private float view_sight = 10.0f;
 
 	// Use this for initialization
 	void Start ()
@@ -33,10 +38,16 @@ public class swordsman_controller : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        if(!anim_controller.GetBool("is_touched") && !anim_controller.GetBool("is_attacking"))
+        bool is_left_ok = Physics2D.OverlapCircle(left_check.position, radius_check, layer_check);
+        bool is_right_ok = Physics2D.OverlapCircle(right_check.position, radius_check, layer_check);
+
+        if (!anim_controller.GetBool("is_touched") && !anim_controller.GetBool("is_attacking"))
         {
-            swordsman.Move(gameObject, rigid, player);
-        }       
+            if(Mathf.Abs(player_transform.position.x - transform.position.x) <= view_sight)
+            {
+                swordsman.Move(gameObject, rigid, player, 0, is_left_ok, is_right_ok);
+            }            
+        }
 
         WillAttack();
 
@@ -84,16 +95,24 @@ public class swordsman_controller : MonoBehaviour
             swordsman.HasBeenTouched(GameManager.gm_instance.cqb_damage);
             rigid.velocity = new Vector2(0, 0);
         }
-    }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.collider.tag == "ThunderBall")
+        if (collision.tag == "ThunderBall")
         {
             swordsman.HasBeenTouched(GameManager.gm_instance.thunder_ball_damage);
             Attack();
             anim_controller.SetBool("is_touched", true);
             touched_time = Time.time;
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        /*if (collision.collider.tag == "ThunderBall")
+        {
+            swordsman.HasBeenTouched(GameManager.gm_instance.thunder_ball_damage);
+            Attack();
+            anim_controller.SetBool("is_touched", true);
+            touched_time = Time.time;
+        }*/
     }
 }

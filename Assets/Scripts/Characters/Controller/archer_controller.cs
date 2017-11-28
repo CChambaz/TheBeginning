@@ -72,9 +72,7 @@ public class archer_controller : MonoBehaviour
             Rotate();
 
             bool is_left_ok = Physics2D.OverlapCircle(left_check.position, radius_check, layer_check);
-            bool is_right_ok = Physics2D.OverlapCircle(right_check.position, radius_check, layer_check);
-
-            archer.Move(gameObject, rigid, player, view_sight, is_left_ok, is_right_ok);
+            bool is_right_ok = Physics2D.OverlapCircle(right_check.position, radius_check, layer_check);           
 
             WillShoot();
 
@@ -90,7 +88,6 @@ public class archer_controller : MonoBehaviour
 
     private void Shoot()
     {
-
         if (!rotate_used)
         { 
             arrow_velocity = -arrow_velocity;
@@ -115,6 +112,8 @@ public class archer_controller : MonoBehaviour
         last_time_fire = Time.time;
 
         anim_controller.SetBool("is_shooting", false);
+
+        Destroy(arrow, 5);
     }
 
     private void Rotate()
@@ -180,12 +179,9 @@ public class archer_controller : MonoBehaviour
             anim_controller.SetBool("is_shooting", false);
             anim_controller.SetBool("is_touched", true);
             touched_time = Time.time;
-        }        
-    }
+        }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.collider.tag == "ThunderBall")
+        if (collision.tag == "ThunderBall")
         {
             archer.HasBeenTouched(GameManager.gm_instance.thunder_ball_damage);
             Attack();
@@ -193,5 +189,17 @@ public class archer_controller : MonoBehaviour
             anim_controller.SetBool("is_touched", true);
             touched_time = Time.time;
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        /*if (collision.collider.tag == "ThunderBall")
+        {
+            archer.HasBeenTouched(GameManager.gm_instance.thunder_ball_damage);
+            Attack();
+            anim_controller.SetBool("is_shooting", false);
+            anim_controller.SetBool("is_touched", true);
+            touched_time = Time.time;
+        }*/
     }
 }

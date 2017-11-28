@@ -167,6 +167,34 @@ public class paladin_controller : MonoBehaviour
                 touched_time = Time.time;
             }
         }
+
+        if(collision.tag == "HostileEnvironnement")
+        {
+            paladin_player.HasBeenTouched(transform, spawn_transform);
+            anim_controller.SetBool("is_touched", true);
+            touched_time = Time.time;
+        }
+
+        if(collision.tag == "HPItem")
+        {
+            paladin_player.health_point += GameManager.gm_instance.item_hp_gained;
+
+            Destroy(collision.gameObject);
+        }
+
+        if (collision.tag == "ManaItem")
+        {
+            paladin_player.ammo += GameManager.gm_instance.item_mana_gained;
+
+            Destroy(collision.gameObject);
+        }
+
+        if (collision.tag == "LifeItem")
+        {
+            paladin_player.life += GameManager.gm_instance.item_life_gained;
+
+            Destroy(collision.gameObject);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
